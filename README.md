@@ -241,4 +241,4 @@ npm run lint
 
 Add your demo video URL here:
 
-- Demo URL: `PASTE_DEMO_VIDEO_URL_HERE`
+- Demo URL: `https://drive.google.com/file/d/1zYuBCjLGfYN5z88-9__o4JsdUR34Obnf/view?usp=sharing`
