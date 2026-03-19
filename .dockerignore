@@ -1,0 +1,7 @@
+bin
+.git
+.gitignore
+.env
+*.log
+Dockerfile
+docker-compose.yml

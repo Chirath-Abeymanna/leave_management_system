@@ -56,9 +56,11 @@ func (s *userService) Login(ctx context.Context, req models.LoginRequest) (*mode
 	}
 
 	strippedUser := models.User{
-		FullName: user.FullName,
-		Email:    user.Email,
-		Role:     user.Role,
+		FullName:           user.FullName,
+		Email:              user.Email,
+		Role:               user.Role,
+		AnnualLeaveBalance: user.AnnualLeaveBalance,
+		SickLeaveBalance:   user.SickLeaveBalance,
 	}
 
 	return &models.LoginResponse{Token: signed, User: &strippedUser}, nil

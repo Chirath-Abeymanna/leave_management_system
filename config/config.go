@@ -8,14 +8,17 @@ import (
 )
 
 type Config struct {
-	AppPort     string
-	DBHost      string
-	DBUser      string
-	DBPassword  string
-	DBName      string
-	DBPort      string
-	DBSSLMode   string
-	JWTSecret   string
+	AppPort       string
+	DBHost        string
+	DBUser        string
+	DBPassword    string
+	DBName        string
+	DBPort        string
+	DBSSLMode     string
+	JWTSecret     string
+	AdminName     string
+	AdminEmail    string
+	AdminPassword string
 }
 
 func LoadConfig() *Config {
@@ -25,14 +28,17 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		AppPort:    getEnv("APP_PORT", "8080"),
-		DBHost:     getEnv("DB_HOST", "localhost"),
-		DBUser:     getEnv("POSTGRES_USER", "postgres"),
-		DBPassword: getEnv("POSTGRES_PASSWORD", "password"),
-		DBName:     getEnv("POSTGRES_DB", "postgres"),
-		DBPort:     getEnv("DB_PORT", "5432"),
-		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
-		JWTSecret:  getEnv("JWT_SECRET", "secret"),
+		AppPort:       getEnv("APP_PORT", "8080"),
+		DBHost:        getEnv("DB_HOST", "localhost"),
+		DBUser:        getEnv("POSTGRES_USER", "postgres"),
+		DBPassword:    getEnv("POSTGRES_PASSWORD", "password"),
+		DBName:        getEnv("POSTGRES_DB", "postgres"),
+		DBPort:        getEnv("DB_PORT", "5432"),
+		DBSSLMode:     getEnv("DB_SSLMODE", "disable"),
+		JWTSecret:     getEnv("JWT_SECRET", "secret"),
+		AdminName:     getEnv("ADMIN_FULL_NAME", "System Admin"),
+		AdminEmail:    getEnv("ADMIN_EMAIL", "admin@work-ethics.local"),
+		AdminPassword: getEnv("ADMIN_PASSWORD", "Admin@123456"),
 	}
 }
 

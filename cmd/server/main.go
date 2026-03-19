@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,8 +16,10 @@ import (
 	"Server/internal/pkg/logger"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -46,6 +49,10 @@ func main() {
 		logger.Fatal("Failed to ping database", zap.Error(err))
 	}
 	logger.Info("Database connection established")
+
+	if err := ensureAdminUser(db, cfg); err != nil {
+		logger.Fatal("Failed to ensure admin account", zap.Error(err))
+	}
 
 	logger.Info("Starting server...")
 
@@ -95,4 +102,33 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func ensureAdminUser(db *sql.DB, cfg *config.Config) error {
+	if cfg.AdminEmail == "" || cfg.AdminPassword == "" {
+		return fmt.Errorf("ADMIN_EMAIL and ADMIN_PASSWORD must be set")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(cfg.AdminPassword), 12)
+	if err != nil {
+		return fmt.Errorf("hash admin password: %w", err)
+	}
+
+	adminID := "USER-" + uuid.New().String()[:31]
+	query := `
+		INSERT INTO users (id, full_name, email, password_hash, role)
+		VALUES ($1, $2, $3, $4, 'Admin')
+		ON CONFLICT (email) DO UPDATE SET
+			full_name = EXCLUDED.full_name,
+			password_hash = EXCLUDED.password_hash,
+			role = 'Admin',
+			updated_at = CURRENT_TIMESTAMP
+	`
+
+	if _, err := db.Exec(query, adminID, cfg.AdminName, cfg.AdminEmail, string(hashedPassword)); err != nil {
+		return fmt.Errorf("upsert admin user: %w", err)
+	}
+
+	logger.Info("Admin account ensured", zap.String("email", cfg.AdminEmail))
+	return nil
 }
