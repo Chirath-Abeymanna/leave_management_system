@@ -37,7 +37,7 @@ func LoadConfig() *Config {
 }
 
 func (c *Config) DSN() string {
-	return "host=" + c.DBHost + " port=" + c.DBPort + " user=" + c.DBUser + " password=" + c.DBPassword + " dbname=" + c.DBName + " sslmode=" + c.DBSSLMode
+	return "postgres://" + c.DBUser + ":" + c.DBPassword + "@" + c.DBHost + ":" + c.DBPort + "/" + c.DBName + "?sslmode=" + c.DBSSLMode
 }
 
 func getEnv(key, fallback string) string {

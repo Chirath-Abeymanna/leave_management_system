@@ -1,0 +1,26 @@
+﻿2026-03-18 23:14:48	[34mINFO[0m	logger/logger.go:49	Loading configuration...
+2026-03-18 23:14:48	[34mINFO[0m	logger/logger.go:49	Running database migrations...	{"path": "migrations"}
+2026-03-18 23:14:48	[34mINFO[0m	logger/logger.go:49	no migrations applied yet
+2026-03-18 23:14:48	[31mFATAL[0m	logger/logger.go:65	Failed to run migrations check the docker Container: 	{"error": "migration failed: first .: file does not exist"}
+leave_management_system/internal/pkg/logger.Fatal
+	E:/My work/Projects/Work Ethics/backend/internal/pkg/logger/logger.go:65
+main.main
+	E:/My work/Projects/Work Ethics/backend/cmd/server/main.go:33
+runtime.main
+	C:/Program Files/Go/src/runtime/proc.go:285
+go : exit status 1
+At line:1 char:1
++ go run 
+cmd/server/main.go 2>&1 | 
+Out-String -Stream | 
+Set-Content -En ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (e  
+  xit status 1:String)    
+ [], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 

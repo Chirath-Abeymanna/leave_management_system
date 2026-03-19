@@ -9,11 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	"securize_server/config"
-	v1 "securize_server/internal/app/v1"
-	"securize_server/internal/pkg/database"
-	"securize_server/internal/pkg/logger"
+	"leave_management_system/config"
+	v1 "leave_management_system/internal/app/v1"
+	"leave_management_system/internal/pkg/database"
+	"leave_management_system/internal/pkg/logger"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
@@ -27,7 +28,7 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Run global migrations
-	migrationsPath := "./migrations"
+	migrationsPath := "migrations"
 	logger.Info("Running database migrations...", zap.String("path", migrationsPath))
 	if err := database.RunMigrations(cfg.DSN(), migrationsPath); err != nil {
 		logger.Fatal("Failed to run migrations check the docker Container: ", zap.Error(err))
@@ -49,13 +50,13 @@ func main() {
 	logger.Info("Starting server...")
 
 	// Setup routes
-	mux := http.NewServeMux()
-	v1.SetupRoutes(mux, db)
+	router := gin.Default()
+	v1.SetupRoutes(router, db, cfg)
 
 	port := getEnv("PORT", "8080")
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: mux,
+		Handler: router,
 	}
 
 	// Channel to listen for interrupt signals
