@@ -1,11 +1,11 @@
 package repositories
 
 import (
+	"Server/internal/app/v1/interfaces"
+	"Server/internal/app/v1/models"
 	"context"
 	"database/sql"
 	"errors"
-	"leave_management_system/internal/app/v1/interfaces"
-	"leave_management_system/internal/app/v1/models"
 )
 
 type userRepository struct {
@@ -77,6 +77,22 @@ func (r *userRepository) GetAll(ctx context.Context) ([]*models.User, error) {
 func (r *userRepository) Update(ctx context.Context, user *models.User) error {
 	query := `UPDATE users SET full_name=$1, email=$2, role=$3, updated_at=CURRENT_TIMESTAMP WHERE id=$4`
 	res, err := r.db.ExecContext(ctx, query, user.FullName, user.Email, user.Role, user.ID)
+	if err != nil {
+		return err
+	}
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected == 0 {
+		return errors.New("user not found")
+	}
+	return nil
+}
+
+func (r *userRepository) UpdateLeaveBalance(ctx context.Context, id string, annual, sick int) error {
+	query := `UPDATE users SET annual_leave_balance=$1, sick_leave_balance=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3`
+	res, err := r.db.ExecContext(ctx, query, annual, sick, id)
 	if err != nil {
 		return err
 	}

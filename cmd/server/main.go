@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"leave_management_system/config"
-	v1 "leave_management_system/internal/app/v1"
-	"leave_management_system/internal/pkg/database"
-	"leave_management_system/internal/pkg/logger"
+	"Server/config"
+	v1 "Server/internal/app/v1"
+	"Server/internal/pkg/database"
+	"Server/internal/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -48,6 +48,9 @@ func main() {
 	logger.Info("Database connection established")
 
 	logger.Info("Starting server...")
+
+	// Switch between gin debug mode and release mode
+	gin.SetMode(gin.ReleaseMode)
 
 	// Setup routes
 	router := gin.Default()

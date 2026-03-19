@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"leave_management_system/internal/pkg/logger"
+	"Server/internal/pkg/logger"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
