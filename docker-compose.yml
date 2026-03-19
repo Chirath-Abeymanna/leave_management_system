@@ -1,0 +1,80 @@
+name: work-ethics
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: work_ethics_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-work_ethics_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-work_ethics_password}
+      POSTGRES_DB: ${POSTGRES_DB:-work_ethics_db}
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD:-scram-sha-256}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-work_ethics_user} -d ${POSTGRES_DB:-work_ethics_db}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - leave-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: work_ethics_backend
+    restart: unless-stopped
+    environment:
+      APP_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-work_ethics_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-work_ethics_password}
+      POSTGRES_DB: ${POSTGRES_DB:-work_ethics_db}
+      DB_SSLMODE: disable
+      JWT_SECRET: ${JWT_SECRET:-super_secret_change_me}
+      ADMIN_FULL_NAME: ${ADMIN_FULL_NAME:-System Admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@work-ethics.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@123456}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - leave-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: work_ethics_frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - leave-network
+
+networks:
+  leave-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
