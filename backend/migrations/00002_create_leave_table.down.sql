@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS leave_requests CASCADE;
+DROP TYPE IF EXISTS leave_status;
